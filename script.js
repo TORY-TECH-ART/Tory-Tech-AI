@@ -2,17 +2,17 @@
    1. GLOBAL CONFIGURATION & INITIALIZATION
    ========================================================================== */
 
-// Initialize all Lucide Icons on start
 lucide.createIcons();
 
-// Backend API URL hosted on Render
-const BACKEND_API_URL = "https://tory-ai-backend.onrender.com/api/chat";
+const BACKEND_BASE = "https://tory-ai-backend.onrender.com";
+const BACKEND_API_URL = `${BACKEND_BASE}/api/chat`;
 
 // DOM References
 const chatForm = document.getElementById('chatForm');
 const userInput = document.getElementById('userInput');
 const chatMessages = document.getElementById('chatMessages');
 const sendBtn = document.getElementById('sendBtn');
+const statusBadge = document.querySelector('.status-badge');
 
 // Dropdown Elements
 const themeDropdown = document.getElementById('themeDropdown');
@@ -21,43 +21,62 @@ const dropdownMenu = document.getElementById('dropdownMenu');
 const activeThemeDot = document.getElementById('activeThemeDot');
 const activeThemeLabel = document.getElementById('activeThemeLabel');
 
-// Runtime Session State
 let isGenerating = false;
 let abortController = null;
 let currentBotMessageContainer = null;
+
+// Automatic Backend Health Check & Wake-Up on Load
+async function checkBackendConnection() {
+  if (statusBadge) {
+    statusBadge.innerHTML = '<span class="dot" style="background:#eab308; box-shadow:0 0 8px #eab308;"></span> Connecting...';
+  }
+
+  try {
+    const res = await fetch(`${BACKEND_BASE}/api/health`);
+    if (res.ok) {
+      if (statusBadge) {
+        statusBadge.innerHTML = '<span class="dot" style="background:#10b981; box-shadow:0 0 8px #10b981;"></span> Online';
+      }
+    } else {
+      throw new Error(`Server returned status ${res.status}`);
+    }
+  } catch (err) {
+    if (statusBadge) {
+      statusBadge.innerHTML = '<span class="dot" style="background:#ef4444; box-shadow:0 0 8px #ef4444;"></span> Server Offline / Waking Up';
+    }
+    appendErrorNotice(`Backend Notice: Server is waking up (Free tier takes ~30s). Please wait a moment.`);
+  }
+}
+
+// Run connection check immediately
+checkBackendConnection();
 
 
 /* ==========================================================================
    2. THEME DROPDOWN CONTROLLER
    ========================================================================== */
 
-// Toggle Dropdown Menu Open / Close
 dropdownTrigger.addEventListener('click', (e) => {
   e.stopPropagation();
   themeDropdown.classList.toggle('open');
 });
 
-// Close Dropdown when clicking outside
 document.addEventListener('click', () => {
   themeDropdown.classList.remove('open');
 });
 
-// Select & Apply Theme
 dropdownMenu.querySelectorAll('.dropdown-item').forEach(item => {
   item.addEventListener('click', () => {
     const theme = item.getAttribute('data-value');
     const label = item.innerText.trim();
     const dotColor = window.getComputedStyle(item.querySelector('.theme-dot')).backgroundColor;
 
-    // Apply attribute to document root
     document.body.setAttribute('data-theme', theme);
     activeThemeLabel.textContent = label;
     activeThemeDot.style.backgroundColor = dotColor;
 
-    // Update active check state
     dropdownMenu.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('active'));
     item.classList.add('active');
-
     themeDropdown.classList.remove('open');
   });
 });
@@ -67,7 +86,6 @@ dropdownMenu.querySelectorAll('.dropdown-item').forEach(item => {
    3. CHAT FORM & GENERATION LIFECYCLE
    ========================================================================== */
 
-// Handle Submit / Toggle Stop
 chatForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -83,19 +101,17 @@ chatForm.addEventListener('submit', async (e) => {
   startChatTurn(text);
 });
 
-// Initiate a turn
 async function startChatTurn(text) {
   appendUserMessage(text);
   const typingElem = showTypingIndicator();
   await streamGeminiResponse(text, typingElem);
 }
 
-// Abort Active Generation
 function stopGeneration() {
   if (abortController) {
     abortController.abort();
   }
-
+  
   const typingIndicator = chatMessages.querySelector('.typing-indicator')?.closest('.message');
   if (typingIndicator) {
     typingIndicator.remove();
@@ -105,7 +121,6 @@ function stopGeneration() {
   setGeneratingState(false);
 }
 
-// Toggle Send vs Stop Button Icon / States
 function setGeneratingState(generating) {
   isGenerating = generating;
   if (generating) {
@@ -123,7 +138,7 @@ function setGeneratingState(generating) {
 
 
 /* ==========================================================================
-   4. REAL-TIME STREAMING API ENGINE (RENDER BACKEND)
+   4. REAL-TIME STREAMING API ENGINE
    ========================================================================== */
 async function streamGeminiResponse(userQuestion, typingElem) {
   abortController = new AbortController();
@@ -139,21 +154,21 @@ async function streamGeminiResponse(userQuestion, typingElem) {
 
     removeTypingIndicator(typingElem);
 
-    // API Error Handler
     if (!response.ok) {
       const errText = await response.text();
-      let errorMsg = "Unable to connect to server.";
-
-      if (response.status === 429 || errText.toLowerCase().includes("quota")) {
-        errorMsg = "API Quota exceeded. Please wait a few seconds before trying again.";
+      let errorMsg = `Server error (${response.status}): ${errText || 'Not Found'}`;
+      
+      if (response.status === 404) {
+        errorMsg = "Error 404: Backend route not found. Make sure Render finished deploying the updated server.js.";
+      } else if (response.status === 429 || errText.toLowerCase().includes("quota")) {
+        errorMsg = "API Quota exceeded. Please wait a moment.";
       }
-
+      
       appendErrorNotice(errorMsg);
       setGeneratingState(false);
       return;
     }
 
-    // Build the dynamic bot message container
     const msgDiv = document.createElement('div');
     msgDiv.className = 'message bot-message fade-in';
 
@@ -173,7 +188,6 @@ async function streamGeminiResponse(userQuestion, typingElem) {
     currentBotMessageContainer = msgDiv;
     lucide.createIcons();
 
-    // Stream SSE Chunks
     const reader = response.body.getReader();
     const decoder = new TextDecoder("utf-8");
     let buffer = "";
@@ -198,14 +212,11 @@ async function streamGeminiResponse(userQuestion, typingElem) {
             fullBotResponse += chunkText;
             contentDiv.innerHTML = marked.parse(fullBotResponse);
             scrollToBottom();
-          } catch (e) {
-            // Wait for complete JSON fragment
-          }
+          } catch (e) {}
         }
       }
     }
 
-    // Apply Code Highlighting & Code Copy Buttons
     contentDiv.querySelectorAll('pre code').forEach((block) => {
       hljs.highlightElement(block);
       addCopyButtonToCodeBlock(block);
@@ -215,7 +226,7 @@ async function streamGeminiResponse(userQuestion, typingElem) {
     removeTypingIndicator(typingElem);
     if (error.name !== 'AbortError') {
       console.error("Streaming error:", error);
-      appendErrorNotice("Server waking up or unreachable. Please retry in a few seconds.");
+      appendErrorNotice("Network error: Server waking up or unreachable. Please try again in 10 seconds.");
     }
   } finally {
     setGeneratingState(false);
@@ -253,22 +264,6 @@ function appendUserMessage(text) {
   scrollToBottom();
 }
 
-function appendBotMessage(text) {
-  const msgDiv = document.createElement('div');
-  msgDiv.className = 'message bot-message fade-in';
-  msgDiv.innerHTML = `
-    <div class="message-content">${text}</div>
-    <div class="message-actions">
-      <button class="msg-action-btn copy-msg-btn" title="Copy message" onclick="copyFullMessage(this)">
-        <i data-lucide="copy"></i>
-      </button>
-    </div>
-  `;
-  chatMessages.appendChild(msgDiv);
-  lucide.createIcons();
-  scrollToBottom();
-}
-
 function appendStoppedNotice(container) {
   if (container) {
     if (!container.querySelector('.stopped-notice')) {
@@ -277,17 +272,7 @@ function appendStoppedNotice(container) {
       stoppedBadge.innerHTML = '<i data-lucide="octagon-alert"></i> Generation stopped by user';
       container.appendChild(stoppedBadge);
     }
-  } else {
-    const msgDiv = document.createElement('div');
-    msgDiv.className = 'message bot-message fade-in';
-    msgDiv.innerHTML = `
-      <div class="stopped-notice">
-        <i data-lucide="octagon-alert"></i> Generation stopped by user
-      </div>
-    `;
-    chatMessages.appendChild(msgDiv);
   }
-
   lucide.createIcons();
   scrollToBottom();
 }
@@ -372,7 +357,7 @@ async function saveAndFork(btn) {
    7. UTILITY & HELPER FUNCTIONS
    ========================================================================== */
 
-window.copyFullMessage = async function (btn) {
+window.copyFullMessage = async function(btn) {
   const msgContent = btn.closest('.message').querySelector('.message-content');
   const text = msgContent.innerText;
   await navigator.clipboard.writeText(text);
