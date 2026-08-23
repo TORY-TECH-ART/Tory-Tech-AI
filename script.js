@@ -4,8 +4,9 @@
 
 lucide.createIcons();
 
+// Replace lines 6-9 in your frontend script.js with:
 const BACKEND_BASE = "https://tory-ai-backend.onrender.com";
-const BACKEND_API_URL = `${BACKEND_BASE}/api/chat`;
+const BACKEND_API_URL = "https://tory-ai-backend.onrender.com/api/chat";
 
 // DOM References
 const chatForm = document.getElementById('chatForm');
@@ -111,7 +112,7 @@ function stopGeneration() {
   if (abortController) {
     abortController.abort();
   }
-  
+
   const typingIndicator = chatMessages.querySelector('.typing-indicator')?.closest('.message');
   if (typingIndicator) {
     typingIndicator.remove();
@@ -157,13 +158,13 @@ async function streamGeminiResponse(userQuestion, typingElem) {
     if (!response.ok) {
       const errText = await response.text();
       let errorMsg = `Server error (${response.status}): ${errText || 'Not Found'}`;
-      
+
       if (response.status === 404) {
         errorMsg = "Error 404: Backend route not found. Make sure Render finished deploying the updated server.js.";
       } else if (response.status === 429 || errText.toLowerCase().includes("quota")) {
         errorMsg = "API Quota exceeded. Please wait a moment.";
       }
-      
+
       appendErrorNotice(errorMsg);
       setGeneratingState(false);
       return;
@@ -212,7 +213,7 @@ async function streamGeminiResponse(userQuestion, typingElem) {
             fullBotResponse += chunkText;
             contentDiv.innerHTML = marked.parse(fullBotResponse);
             scrollToBottom();
-          } catch (e) {}
+          } catch (e) { }
         }
       }
     }
@@ -357,7 +358,7 @@ async function saveAndFork(btn) {
    7. UTILITY & HELPER FUNCTIONS
    ========================================================================== */
 
-window.copyFullMessage = async function(btn) {
+window.copyFullMessage = async function (btn) {
   const msgContent = btn.closest('.message').querySelector('.message-content');
   const text = msgContent.innerText;
   await navigator.clipboard.writeText(text);
