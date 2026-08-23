@@ -1,0 +1,889 @@
+/* ==========================================================================
+   STYLE.CSS
+   AI STUDIO ASSISTANT — COMPLETE UI STYLESHEET
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. GLOBAL DESIGN TOKENS
+   ========================================================================== */
+
+/* Variable Design Tokens */
+:root {
+    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    --transition-speed: 0.25s;
+}
+
+
+/* ==========================================================================
+   2. DARK THEME — DEFAULT
+   ========================================================================== */
+
+/* Main colors, surfaces, messages, borders, and input styling */
+[data-theme="dark"] {
+    --bg-main: #0f172a;
+    --card-bg: rgba(30, 41, 59, 0.7);
+    --header-bg: rgba(15, 23, 42, 0.85);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --user-msg: linear-gradient(135deg, #6366f1, #4f46e5);
+    --bot-msg: #334155;
+    --accent-glow: rgba(99, 102, 241, 0.25);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --input-bg: #1e293b;
+}
+
+
+/* ==========================================================================
+   3. LIGHT THEME
+   ========================================================================== */
+
+/* Light background, surfaces, text, message, and input colors */
+[data-theme="light"] {
+    --bg-main: #f1f5f9;
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --header-bg: rgba(255, 255, 255, 0.9);
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --user-msg: linear-gradient(135deg, #2563eb, #1d4ed8);
+    --bot-msg: #e2e8f0;
+    --accent-glow: rgba(37, 99, 235, 0.15);
+    --border-color: rgba(0, 0, 0, 0.08);
+    --input-bg: #ffffff;
+}
+
+
+/* ==========================================================================
+   4. CYBERPUNK THEME
+   ========================================================================== */
+
+/* Neon cyan, pink, purple, and dark futuristic color palette */
+[data-theme="cyberpunk"] {
+    --bg-main: #0d0221;
+    --card-bg: rgba(22, 11, 46, 0.85);
+    --header-bg: rgba(13, 2, 33, 0.9);
+    --text-main: #00f5d4;
+    --text-muted: #7b2cbf;
+    --user-msg: linear-gradient(135deg, #f72585, #7209b7);
+    --bot-msg: #240046;
+    --accent-glow: rgba(247, 37, 133, 0.35);
+    --border-color: #00f5d444;
+    --input-bg: #10002b;
+}
+
+
+/* ==========================================================================
+   5. NEON SYNTHWAVE THEME
+   ========================================================================== */
+
+/* Pink, purple, and cyan synthwave-inspired color palette */
+[data-theme="synthwave"] {
+    --bg-main: #1a102f;
+    --card-bg: rgba(38, 20, 68, 0.85);
+    --header-bg: rgba(26, 16, 47, 0.9);
+    --text-main: #ff71ce;
+    --text-muted: #01cdfe;
+    --user-msg: linear-gradient(135deg, #ff71ce, #b967ff);
+    --bot-msg: #351952;
+    --accent-glow: rgba(255, 113, 206, 0.35);
+    --border-color: rgba(1, 205, 254, 0.2);
+    --input-bg: #20103c;
+}
+
+
+/* ==========================================================================
+   6. EMERALD FOREST THEME
+   ========================================================================== */
+
+/* Deep green background with emerald accent colors */
+[data-theme="emerald"] {
+    --bg-main: #062016;
+    --card-bg: rgba(12, 45, 32, 0.85);
+    --header-bg: rgba(6, 32, 22, 0.9);
+    --text-main: #e2f1e7;
+    --text-muted: #6ee7b7;
+    --user-msg: linear-gradient(135deg, #059669, #047857);
+    --bot-msg: #133e2c;
+    --accent-glow: rgba(16, 185, 129, 0.25);
+    --border-color: rgba(110, 231, 183, 0.15);
+    --input-bg: #0b3323;
+}
+
+
+/* ==========================================================================
+   7. DRACULA THEME
+   ========================================================================== */
+
+/* Dracula-inspired purple, pink, and dark gray color palette */
+[data-theme="dracula"] {
+    --bg-main: #282a36;
+    --card-bg: rgba(68, 71, 90, 0.85);
+    --header-bg: rgba(40, 42, 54, 0.9);
+    --text-main: #f8f8f2;
+    --text-muted: #bd93f9;
+    --user-msg: linear-gradient(135deg, #ff79c6, #bd93f9);
+    --bot-msg: #383a59;
+    --accent-glow: rgba(189, 147, 249, 0.25);
+    --border-color: rgba(255, 121, 198, 0.2);
+    --input-bg: #1e1f29;
+}
+
+
+/* ==========================================================================
+   8. MINIMAL SUNSET THEME
+   ========================================================================== */
+
+/* Warm orange, red, pink, and dark sunset color palette */
+[data-theme="sunset"] {
+    --bg-main: #2b1e2a;
+    --card-bg: rgba(58, 38, 56, 0.85);
+    --header-bg: rgba(43, 30, 42, 0.9);
+    --text-main: #fff3ec;
+    --text-muted: #fca5a5;
+    --user-msg: linear-gradient(135deg, #f97316, #ef4444);
+    --bot-msg: #4a2f47;
+    --accent-glow: rgba(249, 115, 22, 0.3);
+    --border-color: rgba(252, 165, 165, 0.15);
+    --input-bg: #362434;
+}
+
+
+/* ==========================================================================
+   9. GLOBAL RESET & BASE TYPOGRAPHY
+   ========================================================================== */
+
+/* Apply consistent sizing, spacing, and font family across the application */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-sans);
+}
+
+
+/* ==========================================================================
+   10. APPLICATION BODY & BACKGROUND
+   ========================================================================== */
+
+/* Center the chat application and apply the theme background */
+body {
+    background-color: var(--bg-main);
+    background-image: radial-gradient(circle at 50% 0%, var(--accent-glow), transparent 70%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    transition: background var(--transition-speed);
+}
+
+
+/* ==========================================================================
+   11. MAIN CHAT CONTAINER
+   ========================================================================== */
+
+/* Glassmorphism desktop chat shell */
+.chat-container {
+    width: 92%;
+    max-width: 900px;
+    height: 90vh;
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+
+/* ==========================================================================
+   12. CHAT HEADER
+   ========================================================================== */
+
+/* Main header container */
+.chat-header {
+    padding: 16px 24px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Branding and status group */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* AI avatar container */
+.bot-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--user-msg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+/* Application title */
+.chat-header h2 {
+    font-size: 1.1rem;
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+/* Online status indicator */
+.status-badge {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Status dot */
+.dot {
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #10b981;
+}
+
+
+/* ==========================================================================
+   13. CUSTOM THEME DROPDOWN
+   ========================================================================== */
+
+/* Dropdown positioning and interaction behavior */
+.custom-dropdown {
+    position: relative;
+    user-select: none;
+    z-index: 50;
+}
+
+/* Theme selector trigger button */
+.dropdown-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 6px 14px;
+    color: var(--text-main);
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+/* Theme selector hover state */
+.dropdown-trigger:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Dropdown arrow icon */
+.dropdown-chevron {
+    width: 14px;
+    height: 14px;
+    color: var(--text-muted);
+    transition: transform 0.25s ease;
+}
+
+/* Rotate arrow while menu is open */
+.custom-dropdown.open .dropdown-chevron {
+    transform: rotate(180deg);
+}
+
+
+/* ==========================================================================
+   14. FLOATING GLASS DROPDOWN MENU
+   ========================================================================== */
+
+/* Hidden and animated dropdown panel */
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 175px;
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 6px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px) scale(0.96);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Display dropdown when opened */
+.custom-dropdown.open .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* Individual theme option */
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+/* Theme option hover state */
+.dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-main);
+}
+
+/* Currently selected theme */
+.dropdown-item.active {
+    color: var(--text-main);
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+
+/* ==========================================================================
+   15. THEME COLOR PREVIEW DOTS
+   ========================================================================== */
+
+/* Base preview dot */
+.theme-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: #6366f1;
+}
+
+/* Individual theme preview colors */
+.dot-dark {
+    background: #6366f1;
+}
+
+.dot-light {
+    background: #2563eb;
+}
+
+.dot-cyberpunk {
+    background: #00f5d4;
+}
+
+.dot-synthwave {
+    background: #ff71ce;
+}
+
+.dot-emerald {
+    background: #10b981;
+}
+
+.dot-dracula {
+    background: #bd93f9;
+}
+
+.dot-sunset {
+    background: #f97316;
+}
+
+
+/* ==========================================================================
+   16. CHAT MESSAGE STREAM
+   ========================================================================== */
+
+/* Scrollable conversation area */
+.chat-messages {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Base message wrapper */
+.message {
+    max-width: 82%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Shared message content styling */
+.message-content {
+    padding: 14px 18px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-main);
+}
+
+
+/* ==========================================================================
+   17. USER & BOT MESSAGE BUBBLES
+   ========================================================================== */
+
+/* User message alignment */
+.user-message {
+    align-self: flex-end;
+}
+
+/* User message appearance */
+.user-message .message-content {
+    background: var(--user-msg);
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+}
+
+/* Bot message alignment */
+.bot-message {
+    align-self: flex-start;
+}
+
+/* Bot message appearance */
+.bot-message .message-content {
+    background: var(--bot-msg);
+    border-bottom-left-radius: 4px;
+}
+
+
+/* ==========================================================================
+   18. MESSAGE ACTION BUTTONS
+   ========================================================================== */
+
+/* Copy and edit action container */
+.message-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 5px;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* Align user message actions to the right */
+.user-message .message-actions {
+    justify-content: flex-end;
+}
+
+/* Reveal actions when hovering over a message */
+.message:hover .message-actions {
+    opacity: 1;
+}
+
+/* Individual message action button */
+.msg-action-btn {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    border-radius: 6px;
+    padding: 4px 6px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+/* Action icon sizing */
+.msg-action-btn svg,
+.msg-action-btn i {
+    width: 14px;
+    height: 14px;
+}
+
+/* Action button hover state */
+.msg-action-btn:hover {
+    color: var(--text-main);
+    border-color: var(--text-muted);
+}
+
+/* Successful copy state */
+.msg-action-btn.copied {
+    color: #10b981;
+    border-color: #10b981;
+}
+
+
+/* ==========================================================================
+   19. MESSAGE ANIMATIONS
+   ========================================================================== */
+
+/* Generic message entrance animation */
+.fade-in {
+    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Fade and slide animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ==========================================================================
+   20. TYPING INDICATOR
+   ========================================================================== */
+
+/* Typing indicator layout */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 16px;
+}
+
+/* Individual typing dot */
+.typing-indicator span {
+    width: 6px;
+    height: 6px;
+    background-color: var(--text-muted);
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+
+/* Typing animation timing */
+.typing-indicator span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+/* Typing dot bounce animation */
+@keyframes bounce {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+    }
+
+    40% {
+        transform: scale(1);
+    }
+}
+
+
+/* ==========================================================================
+   21. CHAT FOOTER & INPUT AREA
+   ========================================================================== */
+
+/* Footer container */
+.chat-footer {
+    padding: 20px 24px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Rounded chat input wrapper */
+.chat-input-area {
+    display: flex;
+    align-items: center;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    padding: 8px 8px 8px 20px;
+    transition: border-color var(--transition-speed);
+}
+
+/* Highlight input area while focused */
+.chat-input-area:focus-within {
+    border-color: #6366f1;
+}
+
+/* User text input */
+.chat-input-area input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-main);
+    font-size: 0.98rem;
+}
+
+/* Send / stop button */
+.chat-input-area button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--user-msg);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+}
+
+/* Send button hover animation */
+.chat-input-area button:hover {
+    transform: scale(1.05);
+}
+
+/* Stop generation button */
+.chat-input-area button.stop-btn {
+    background: #ef4444 !important;
+}
+
+
+/* ==========================================================================
+   22. CUSTOM CHAT SCROLLBARS
+   ========================================================================== */
+
+/* Firefox scrollbar styling */
+.chat-messages {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
+/* WebKit scrollbar width */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+/* WebKit scrollbar track */
+.chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* WebKit scrollbar thumb */
+.chat-messages::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 10px;
+}
+
+
+/* ==========================================================================
+   23. RICH TEXT & MARKDOWN FORMATTING
+   ========================================================================== */
+
+/* Markdown heading spacing and weight */
+.message-content h1,
+.message-content h2,
+.message-content h3 {
+    margin: 12px 0 6px 0;
+    font-weight: 700;
+}
+
+/* Markdown H1 */
+.message-content h1 {
+    font-size: 1.3rem;
+}
+
+/* Markdown H2 */
+.message-content h2 {
+    font-size: 1.15rem;
+}
+
+/* Markdown H3 */
+.message-content h3 {
+    font-size: 1.05rem;
+}
+
+/* Markdown paragraphs */
+.message-content p {
+    margin-bottom: 8px;
+}
+
+/* Remove extra margin from final paragraph */
+.message-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Markdown unordered and ordered lists */
+.message-content ul,
+.message-content ol {
+    margin: 8px 0 8px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Inline code */
+.message-content code {
+    background: rgba(0, 0, 0, 0.25);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.88em;
+}
+
+/* Code block container */
+.message-content pre {
+    background: #0d1117 !important;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 10px 0;
+    overflow-x: auto;
+    position: relative;
+}
+
+/* Code inside code blocks */
+.message-content pre code {
+    background: transparent;
+    padding: 0;
+    font-size: 0.88rem;
+}
+
+
+/* ==========================================================================
+   24. CODE BLOCK COPY BUTTON
+   ========================================================================== */
+
+/* Copy button positioned inside code blocks */
+.copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+/* Code copy button hover state */
+.copy-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+
+/* ==========================================================================
+   25. INLINE MESSAGE EDITING
+   ========================================================================== */
+
+/* Inline editing layout */
+.inline-edit-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+/* Editable message textarea */
+.edit-textarea {
+    width: 100%;
+    min-height: 70px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 10px 14px;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    outline: none;
+    resize: vertical;
+}
+
+/* Textarea focus state */
+.edit-textarea:focus {
+    border-color: #6366f1;
+}
+
+/* Edit action button group */
+.edit-button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+/* Shared edit button styling */
+.edit-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+/* Cancel edit button */
+.edit-btn.cancel-btn {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+}
+
+/* Cancel button hover state */
+.edit-btn.cancel-btn:hover {
+    color: var(--text-main);
+    border-color: var(--text-muted);
+}
+
+/* Save and submit button */
+.edit-btn.save-btn {
+    background: var(--user-msg);
+    color: #ffffff;
+}
+
+/* Save button hover state */
+.edit-btn.save-btn:hover {
+    opacity: 0.9;
+}
+
+
+/* ==========================================================================
+   26. GENERATION STOPPED / ERROR NOTICE
+   ========================================================================== */
+
+/* Notice badge displayed when generation is stopped or an error occurs */
+.stopped-notice {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 6px;
+    width: fit-content;
+}
+
+/* Notice icon sizing */
+.stopped-notice svg,
+.stopped-notice i {
+    width: 14px;
+    height: 14px;
+}
+
+
+/* ==========================================================================
+   END OF STYLE.CSS
+   ========================================================================== */
