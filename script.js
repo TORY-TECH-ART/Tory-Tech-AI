@@ -170,29 +170,11 @@ async function streamGeminiResponse(userQuestion, typingElem) {
       return;
     }
 
-    const msgDiv = document.createElement('div');
-    msgDiv.className = 'message bot-message fade-in';
-
-    const contentDiv = document.createElement('div');
-    contentDiv.className = 'message-content';
-    msgDiv.appendChild(contentDiv);
-
-    const actionsDiv = document.createElement('div');
-    actionsDiv.className = 'message-actions';
-    actionsDiv.innerHTML = `
-      <button class="msg-action-btn copy-msg-btn" title="Copy response" onclick="copyFullMessage(this)">
-        <i data-lucide="copy"></i>
-      </button>
-    `;
-    msgDiv.appendChild(actionsDiv);
-    chatMessages.appendChild(msgDiv);
-    currentBotMessageContainer = msgDiv;
-    lucide.createIcons();
-
     const reader = response.body.getReader();
     const decoder = new TextDecoder("utf-8");
     let buffer = "";
     let fullBotResponse = "";
+    let contentDiv = null;
 
     while (true) {
       const { done, value } = await reader.read();
@@ -210,9 +192,29 @@ async function streamGeminiResponse(userQuestion, typingElem) {
           try {
             const parsed = JSON.parse(jsonString);
             const chunkText = parsed.candidates?.[0]?.content?.parts?.[0]?.text || "";
-            fullBotResponse += chunkText;
-            contentDiv.textContent = fullBotResponse;
-            scrollToBottom();
+            if (chunkText) {
+              if (!contentDiv) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'message bot-message fade-in';
+                contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                msgDiv.appendChild(contentDiv);
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'message-actions';
+                actionsDiv.innerHTML = `
+                  <button class="msg-action-btn copy-msg-btn" title="Copy response" onclick="copyFullMessage(this)">
+                    <i data-lucide="copy"></i>
+                  </button>
+                `;
+                msgDiv.appendChild(actionsDiv);
+                chatMessages.appendChild(msgDiv);
+                currentBotMessageContainer = msgDiv;
+                lucide.createIcons();
+              }
+              fullBotResponse += chunkText;
+              contentDiv.textContent = fullBotResponse;
+              scrollToBottom();
+            }
           } catch (e) { }
         }
       }
