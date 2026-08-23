@@ -93,8 +93,22 @@
         <!-- FOOTER / USER INPUT FORM                   -->
         <!-- ========================================== -->
         <footer class="chat-footer">
+            <!-- File Attachment Preview Pill -->
+            <div id="filePreview" class="file-preview-pill" style="display: none;">
+                <div id="previewMediaContainer"></div>
+                <span id="fileName"></span>
+                <button type="button" id="removeFileBtn" title="Remove file">&times;</button>
+            </div>
+        
             <form class="chat-input-area" id="chatForm">
-                <input type="text" id="userInput" placeholder="Ask me anything..." autocomplete="off" required />
+                <!-- Hidden file input & paperclip button -->
+                <input type="file" id="fileInput" accept="image/*,video/*,audio/*,application/pdf,text/*"
+                    style="display: none;" />
+                <button type="button" class="attach-btn" id="attachBtn" title="Attach file">
+                    <i data-lucide="paperclip"></i>
+                </button>
+        
+                <input type="text" id="userInput" placeholder="Ask me anything..." autocomplete="off" />
                 <button type="submit" id="sendBtn" aria-label="Send message">
                     <i data-lucide="arrow-up" id="sendIcon"></i>
                 </button>
